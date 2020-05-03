@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "70140324539",
+    "firebase_url": "https://shashikantdwivedi-bedcf.firebaseio.com",
+    "project_id": "shashikantdwivedi-bedcf",
+    "storage_bucket": "shashikantdwivedi-bedcf.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:70140324539:android:143324e5ae7425f192979e",
+        "android_client_info": {
+          "package_name": "shashikantdwivedi.com"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "70140324539-0gk6mjnmhkf76im051idun8031r0tud9.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDgTxCSD1dgaF6f-E7T26fcuVo44IlFocw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "70140324539-0gk6mjnmhkf76im051idun8031r0tud9.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
