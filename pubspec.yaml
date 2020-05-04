@@ -31,7 +31,7 @@ dependencies:
   webview_flutter: ^0.3.21
   firebase_messaging: ^6.0.13
   flutter_launcher_icons: ^0.7.5
-  flutter_webview_plugin: ^0.3.11
+  flutter_share: ^1.0.2+1
 
 dev_dependencies:
   flutter_test:
