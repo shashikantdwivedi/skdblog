@@ -1,240 +1,170 @@
 import 'package:flutter/material.dart';
-import 'package:webview_flutter/webview_flutter.dart';
-import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_share/flutter_share.dart';
+import 'package:provider/provider.dart';
+import 'initializer.dart';
+import 'webview_display.dart';
 
-class MyApp extends StatefulWidget {
+class SkdBlog extends StatefulWidget {
   @override
-  State<StatefulWidget> createState() => _MyApp();
+  _SkdBlog createState() {
+    return _SkdBlog();
+  }
 }
 
-class _MyApp extends State<MyApp> {
-  // Initializing firebase messagin class
-  FirebaseMessaging _firebaseMessaging = new FirebaseMessaging();
-
-  // Declaring some variables
-  var menu = false;
-  var back = false;
-  var currentUrl = '';
-  var currentTitle = '';
-
-  // Defining initState
-  @override
-  void initState() {
-    super.initState();
-    _firebaseMessaging.configure(
-      onMessage: (Map<String, dynamic> message) {
-        print('on message $message');
-      },
-      onResume: (Map<String, dynamic> message) {
-        print('on resume $message');
-      },
-      onLaunch: (Map<String, dynamic> message) {
-        print('on launch $message');
-      },
-    );
-    _firebaseMessaging.requestNotificationPermissions(
-        const IosNotificationSettings(sound: true, badge: true, alert: true));
-    _firebaseMessaging.getToken().then((token) {
-      print("$token");
-    });
-  }
-
-  WebViewController _controller;
-  int _currentIndex = 0;
-
-  void onTabTapped(int index) {
-    setState(() {
-      _currentIndex = index;
-      if (_currentIndex == 0) {
-        homePage();
-        // correctBrightness();
-      } else if (_currentIndex == 1) {
-        searchPage();
-        // correctBrightness();
-      } else if (_currentIndex == 2) {
-        refreshPage();
-        // correctBrightness();
-      } else if (_currentIndex == 3) {
-        aboutPage();
-        // correctBrightness();
-      }
-    });
-  }
-
-  Widget menuToggle() {
-    if (menu) {
-      return Icon(Icons.close);
-    } else {
-      return Icon(Icons.menu);
-    }
-  }
-
-  showMenu() {
-    if (menu) {
-      _controller.evaluateJavascript('''
-          document.body.classList.remove('has-menu');
-    ''');
-    } else {
-      _controller.evaluateJavascript('''
-          document.body.classList.add('has-menu');
-          document.getElementsByClassName('sideNav-wrap')[0].style.marginTop = '-70px';
-    ''');
-    }
-
-    setState(() {
-      menu = !menu;
-    });
-  }
-
-  Widget backButton() {
+class _SkdBlog extends State<SkdBlog> {
+  Widget backButton(bool back) {
     if (back) {
-      return GestureDetector(
-          onTap: () {
-            _controller.goBack();
-          },
-          child: Icon(Icons.arrow_back));
+      return GestureDetector(onTap: () {}, child: Icon(Icons.arrow_back));
     } else {
       return null;
     }
   }
 
-  refreshPage() {
-    _controller.reload();
-    setState(() {
-      menu = false;
-    });
+  Widget showMenu(initializer) {
+    if (initializer.menu) {
+      if (initializer.controller != null) {
+        initializer.controller.evaluateJavascript('''
+          document.body.classList.add('has-menu');
+          document.getElementsByClassName('sideNav-wrap')[0].style.marginTop = '-70px';
+    ''');
+      }
+      return Icon(Icons.close);
+    } else {
+      if (initializer.controller != null) {
+        initializer.controller.evaluateJavascript('''
+          document.body.classList.remove('has-menu');
+    ''');
+      }
+      return Icon(Icons.menu);
+    }
   }
 
-  searchPage() {
-    _controller.evaluateJavascript('''
+  refreshPage(initializer) {
+    print('Pressed refresh button');
+    initializer.controller.reload();
+    initializer.setMenu(false);
+  }
+
+  openSearchPage(initializer) {
+    initializer.controller.evaluateJavascript('''
           document.body.classList.add('has-search');
     ''');
   }
 
-  homePage() {
-    _controller.loadUrl('https://shashikantdwivedi.com');
-    setState(() {
-      menu = false;
-    });
+  closeSearchPage(initializer) {
+    print('I am here');
+    initializer.controller.evaluateJavascript('''
+          document.body.classList.remove('has-search');
+    ''');
   }
 
-  aboutPage() {
-    _controller.loadUrl('https://shashikantdwivedi.com/about-me');
-    setState(() {
-      menu = false;
-    });
+  homePage(initializer) {
+    initializer.controller.loadUrl('https://shashikantdwivedi.com');
+    initializer.setMenu(false);
+  }
+
+  aboutPage(initializer) {
+    initializer.controller.loadUrl('https://shashikantdwivedi.com/about-me');
+    initializer.setMenu(false);
+  }
+
+  void onTabTapped(int index, initializer) {
+      initializer.setCurrentIndex(index);
+      if (initializer.currentIndex == 0) {
+        homePage(initializer);
+        // correctBrightness();
+      } else if (initializer.currentIndex == 1) {
+        if (initializer.search) {
+          closeSearchPage(initializer);
+        } else {
+          openSearchPage(initializer);
+        }
+        initializer.setSearch(!initializer.search);
+        // correctBrightness();
+      } else if (initializer.currentIndex == 2) {
+        refreshPage(initializer);
+        // correctBrightness();
+      } else if (initializer.currentIndex == 3) {
+        aboutPage(initializer);
+        // correctBrightness();
+      }
+    
+  }
+
+  BottomNavigationBar bottomNavigationBar(initializer) {
+    return BottomNavigationBar(
+        type: BottomNavigationBarType.fixed,
+        currentIndex: initializer.currentIndex,
+        onTap: (index) {
+          onTabTapped(index, initializer);
+        },
+        items: <BottomNavigationBarItem>[
+          BottomNavigationBarItem(
+              icon: Icon(Icons.home),
+              title: Text('Home',
+                  style: TextStyle(fontFamily: 'Circular Std Black'))),
+          BottomNavigationBarItem(
+              icon: Icon(Icons.search),
+              title: Text('Search',
+                  style: TextStyle(fontFamily: 'Circular Std Black'))),
+          BottomNavigationBarItem(
+              icon: Icon(Icons.refresh),
+              title: Text('Refresh',
+                  style: TextStyle(fontFamily: 'Circular Std Black'))),
+          BottomNavigationBarItem(
+              icon: Icon(Icons.info),
+              title: Text('About',
+                  style: TextStyle(fontFamily: 'Circular Std Black')))
+        ]);
+  }
+
+  AppBar appBar(initializer) {
+    return AppBar(
+      leading: backButton(initializer.back),
+      title: Text('Shashikant Dwivedi Blog',
+          style: TextStyle(fontFamily: 'Circular Std Black')),
+      backgroundColor: Colors.black54,
+      actions: [
+        GestureDetector(
+            onTap: () {
+              initializer.setMenu(!initializer.menu);
+            },
+            child: Container(
+                margin: EdgeInsets.all(15.0), child: showMenu(initializer)))
+      ],
+    );
+  }
+
+  FloatingActionButton shareButton(initializer) {
+    return FloatingActionButton(
+        onPressed: () {
+          FlutterShare.share(
+            title: initializer.currentTitle,
+            text: 'Check out this article',
+            linkUrl: initializer.currentUrl,
+          );
+        },
+        child: Icon(Icons.share),
+        tooltip: 'Share');
   }
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-        title: 'Shashikant Dwivedi Blog',
-        home: Scaffold(
-            appBar: AppBar(
-              leading: backButton(),
-              title: Text('Shashikant Dwivedi Blog',
-                  style: TextStyle(fontFamily: 'Circular Std Black')),
-              backgroundColor: Colors.black54,
-              actions: [
-                GestureDetector(
-                    onTap: () {
-                      showMenu();
-                    },
-                    child: Container(
-                        margin: EdgeInsets.all(15.0), child: menuToggle()))
-              ],
-            ),
-            floatingActionButton:
-                FloatingActionButton(onPressed: () {
-                  FlutterShare.share(
-                        title: currentTitle,
-                        text: 'Check out this article',
-                        linkUrl: currentUrl,
-                  );
-                }, child: Icon(Icons.share), tooltip: 'Share'),
-            bottomNavigationBar: BottomNavigationBar(
-                type: BottomNavigationBarType.fixed,
-                currentIndex: _currentIndex,
-                onTap: onTabTapped,
-                items: <BottomNavigationBarItem>[
-                  BottomNavigationBarItem(
-                      icon: Icon(Icons.home),
-                      title: Text('Home',
-                          style: TextStyle(fontFamily: 'Circular Std Black'))),
-                  BottomNavigationBarItem(
-                      icon: Icon(Icons.search),
-                      title: Text('Search',
-                          style: TextStyle(fontFamily: 'Circular Std Black'))),
-                  BottomNavigationBarItem(
-                      icon: Icon(Icons.refresh),
-                      title: Text('Refresh',
-                          style: TextStyle(fontFamily: 'Circular Std Black'))),
-                  BottomNavigationBarItem(
-                      icon: Icon(Icons.info),
-                      title: Text('About',
-                          style: TextStyle(fontFamily: 'Circular Std Black')))
-                ]),
-            body: WebView(
-              initialUrl: 'https://shashikantdwivedi.com',
-              onWebViewCreated: (WebViewController webViewController) {
-                _controller = webViewController;
-              },
-              onPageStarted: (option) {
-                _controller.evaluateJavascript('''
-                document.getElementsByClassName('header')[0].style.display='none';
-                document.getElementsByClassName('share-sticky')[0].style.display='none';
-                ''');
-                setState(() {
-                  menu = false;
-                });
-                _controller.currentUrl().then((value) {
-                  _controller.getTitle().then((title) {
-                    currentUrl = value;
-                    currentTitle = title;
-                  });
-                  if ('shashikantdwivedi.com' != value.split('/')[2]) {
-                    _controller.canGoBack().then((value) {
-                      if (value) {
-                        _controller.goBack();
-                      } else {
-                        homePage();
-                      }
-                    });
-                  } else {
-                    _controller.canGoBack().then((value) {
-                      if (value) {
-                        _controller.currentUrl().then((value) {
-                          if (value == 'https://shashikantdwivedi.com/') {
-                            setState(() {
-                              back = false;
-                            });
-                          } else {
-                            setState(() {
-                              back = true;
-                            });
-                          }
-                        });
-                      } else {
-                        setState(() {
-                          back = false;
-                        });
-                      }
-                    });
-                  }
-                });
-              },
-              onPageFinished: (option) {
-                _controller.evaluateJavascript('''
-                document.getElementsByClassName('header')[0].style.display='none';
-                document.getElementsByClassName('share-sticky')[0].style.display='none';
-                ''');
-              },
-              javascriptMode: JavascriptMode.unrestricted,
-            )));
+    final initializer = Provider.of<Initializer>(context);
+    return SafeArea(
+        child: Scaffold(
+      appBar: appBar(initializer),
+      floatingActionButton: shareButton(initializer),
+      bottomNavigationBar: bottomNavigationBar(initializer),
+      body: WebViewDisplay(),
+    ));
   }
 }
 
 void main() {
-  runApp(MyApp());
+  runApp(MaterialApp(
+    title: 'skdblog',
+    home:
+        ChangeNotifierProvider(create: (_) => Initializer(), child: SkdBlog()),
+  ));
 }
