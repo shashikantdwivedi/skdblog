@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_share/flutter_share.dart';
 import 'package:provider/provider.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'initializer.dart';
 import 'webview_display.dart';
 
@@ -12,6 +13,18 @@ class SkdBlog extends StatefulWidget {
 }
 
 class _SkdBlog extends State<SkdBlog> {
+  FirebaseMessaging _firebaseMessaging = new FirebaseMessaging();
+
+  @override
+  void initState() {
+    super.initState();
+    _firebaseMessaging.requestNotificationPermissions(
+        const IosNotificationSettings(sound: true, badge: true, alert: true));
+    _firebaseMessaging.getToken().then((token) {
+      print("$token");
+    });
+  }
+
   Widget backButton(bool back) {
     if (back) {
       return GestureDetector(onTap: () {}, child: Icon(Icons.arrow_back));
@@ -46,13 +59,14 @@ class _SkdBlog extends State<SkdBlog> {
   }
 
   openSearchPage(initializer) {
+    initializer.setSearch(true);
     initializer.controller.evaluateJavascript('''
           document.body.classList.add('has-search');
     ''');
   }
 
   closeSearchPage(initializer) {
-    print('I am here');
+    initializer.setSearch(false);
     initializer.controller.evaluateJavascript('''
           document.body.classList.remove('has-search');
     ''');
@@ -69,26 +83,23 @@ class _SkdBlog extends State<SkdBlog> {
   }
 
   void onTabTapped(int index, initializer) {
-      initializer.setCurrentIndex(index);
-      if (initializer.currentIndex == 0) {
-        homePage(initializer);
-        // correctBrightness();
-      } else if (initializer.currentIndex == 1) {
-        if (initializer.search) {
-          closeSearchPage(initializer);
-        } else {
-          openSearchPage(initializer);
-        }
-        initializer.setSearch(!initializer.search);
-        // correctBrightness();
-      } else if (initializer.currentIndex == 2) {
-        refreshPage(initializer);
-        // correctBrightness();
-      } else if (initializer.currentIndex == 3) {
-        aboutPage(initializer);
-        // correctBrightness();
+    initializer.setCurrentIndex(index);
+    if (initializer.currentIndex == 0) {
+      closeSearchPage(initializer);
+      homePage(initializer);
+    } else if (initializer.currentIndex == 1) {
+      if (initializer.search) {
+        closeSearchPage(initializer);
+      } else {
+        openSearchPage(initializer);
       }
-    
+    } else if (initializer.currentIndex == 2) {
+      closeSearchPage(initializer);
+      refreshPage(initializer);
+    } else if (initializer.currentIndex == 3) {
+      closeSearchPage(initializer);
+      aboutPage(initializer);
+    }
   }
 
   BottomNavigationBar bottomNavigationBar(initializer) {
