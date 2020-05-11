@@ -31,7 +31,6 @@ dependencies:
   webview_flutter: ^0.3.21
   firebase_messaging: ^6.0.13
   flutter_share: ^1.0.2+1
-  loading: ^1.0.2
   provider: ^4.1.0
   data_connection_checker: ^0.3.4
 
