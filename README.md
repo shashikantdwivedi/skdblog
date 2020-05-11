@@ -95,7 +95,9 @@ Distributed under the MIT License. See `LICENSE` for more information.
 <!-- CONTACT -->
 ## Contact
 
-Your Name - shashikant@shashikantdwivedi.com
+Name - Shashikant Dwivedi
+
+Email - shashikant@shashikantdwivedi.com
 
 Follow - 
 
