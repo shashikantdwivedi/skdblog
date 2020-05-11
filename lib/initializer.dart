@@ -4,11 +4,16 @@ import 'package:webview_flutter/webview_flutter.dart';
 class Initializer with ChangeNotifier {
   bool back = false, menu = false, search = false;
   String currentTitle = '', currentUrl = '';
-  int currentIndex = 0;
+  int currentIndex = 0, pageStatus = 0;
   WebViewController controller;
 
   void initializerController(_controller) {
     controller = _controller;
+  }
+
+  void setPageStatus(status) {
+    pageStatus = status;
+    notifyListeners();
   }
 
   void setSearch(status) {
