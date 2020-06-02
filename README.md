@@ -46,7 +46,15 @@
 
 ## About The Project
 
-<img src="README/ss1.png" width="700">
+![](README/ss1.jpg) 
+
+![](README/ss2.jpg)
+
+![](README/ss3.jpg)
+
+
+
+
 
 I made this flutter application to use personal blog https://shashikantdwivedi.com/ comfortably in my android device. This flutter application is very easy to use. You can also use the application to convert your own blog into an android application.
 
@@ -101,7 +109,7 @@ Email - shashikant@shashikantdwivedi.com
 
 Follow - 
 
-+ [Twitter]([@theskd1999](https://twitter.com/theskd1999))
++ [Twitter](https://twitter.com/theskd1999)
 + [Instagram](https://www.instagram.com/dwivedikantshashi/)
 + [LinkedIn](https://www.linkedin.com/in/shashikant-dwivedi-6133591a1/)
 
